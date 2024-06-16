@@ -1,0 +1,845 @@
+-----------------------------------------------------------------------------
+---------------Denoising Autoencoder of xBD Pre & Post Building Object Image Patches---------------
+version: daevit
+data_path: /home/bpeng/mnt/mnt242/scdm_data/xBD/xbd_disasters_building_polygons_neighbors
+csv_train: csvs_buffer/sub_valid_wo_unclassified_prepost.csv
+pretrained_model: 
+lr: 0.001
+wd: 1e-06
+n_epochs: 100
+train batch size: 16
+print_freq: 10
+cuda
+DenoisingAutoencoderViT(
+  (patch_embed): PatchEmbed(
+    (proj): Conv2d(3, 768, kernel_size=(16, 16), stride=(16, 16))
+    (norm): Identity()
+  )
+  (blocks): ModuleList(
+    (0): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (1): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (2): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (3): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (4): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (5): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (6): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (7): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (8): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (9): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (10): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (11): Block(
+      (norm1): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=768, out_features=2304, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=768, out_features=768, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=768, out_features=3072, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=3072, out_features=768, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+  )
+  (norm): LayerNorm((768,), eps=1e-06, elementwise_affine=True)
+  (decoder_embed): Linear(in_features=768, out_features=512, bias=True)
+  (decoder_blocks): ModuleList(
+    (0): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (1): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (2): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (3): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (4): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (5): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (6): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+    (7): Block(
+      (norm1): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (attn): Attention(
+        (qkv): Linear(in_features=512, out_features=1536, bias=True)
+        (attn_drop): Dropout(p=0.0, inplace=False)
+        (proj): Linear(in_features=512, out_features=512, bias=True)
+        (proj_drop): Dropout(p=0.0, inplace=False)
+      )
+      (drop_path): Identity()
+      (norm2): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+      (mlp): Mlp(
+        (fc1): Linear(in_features=512, out_features=2048, bias=True)
+        (act): GELU()
+        (fc2): Linear(in_features=2048, out_features=512, bias=True)
+        (drop): Dropout(p=0.0, inplace=False)
+      )
+    )
+  )
+  (decoder_norm): LayerNorm((512,), eps=1e-06, elementwise_affine=True)
+  (decoder_pred): Linear(in_features=512, out_features=768, bias=True)
+)
+Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 1e-06
+)
+<torch.optim.lr_scheduler.ReduceLROnPlateau object at 0x7fefab17d610>
+Dataset, directory: /home/bpeng/mnt/mnt242/scdm_data/xBD/xbd_disasters_building_polygons_neighbors
+csv: csvs_buffer/sub_valid_wo_unclassified_prepost.csv
+transform: Compose(
+    Random Resized Crop: [size=(224, 224)] [scale=(0.08, 1.0)] [ratio=(0.75, 1.3333333333333333)].
+    Random flipping the image horizontally or vertically with probability [p=0.5].
+    Random Color Jitter based on PyTorch Implementation: [brightness=0.8] [contrast=0.8] [saturation=0.8] [hue=0.2] [p=0.8]
+    Random grayscale with probability p=0.2
+    Random Gaussian Blur: [kernel=(9, 9)] [sigma_range=(0.1, 2.0)] [p=0.5]
+    Numpy array image to tensor.
+    Normalization to N(0,1),
+ mean-pre=(0.39327543, 0.40631564, 0.32678495)
+ std-pre=(0.16512179, 0.14379614, 0.15171282)
+ mean-post=(0.39327543, 0.40631564, 0.32678495)
+ std-post=(0.16512179, 0.14379614, 0.15171282)
+)
+ class_weights: [0.32519552 2.99635755 3.53671857 3.2421176 ]
+Epoch [1/100]
+Training...
+Current learning rate: 1.0000e-03
+[1][0/7610], loss=3.8862
+[1][762/7610], loss=1.7777
+[1][1524/7610], loss=1.8745
+[1][2286/7610], loss=2.0779
+[1][3048/7610], loss=2.1956
+[1][3810/7610], loss=2.1121
+[1][4572/7610], loss=2.0621
+[1][5334/7610], loss=2.0128
+[1][6096/7610], loss=1.9641
+[1][6858/7610], loss=1.9379
+Train [Time: 1.37 hours] [Loss: 1.9190]
+Time spent total at [1/100]: 1.37
+Epoch [2/100]
+Training...
+Current learning rate: 1.0000e-03
+[2][0/7610], loss=1.8731
+[2][762/7610], loss=1.7266
+[2][1524/7610], loss=1.6707
+[2][2286/7610], loss=1.6250
+[2][3048/7610], loss=1.5709
+[2][3810/7610], loss=1.5062
+[2][4572/7610], loss=1.4559
+[2][5334/7610], loss=1.4192
+[2][6096/7610], loss=1.3912
+[2][6858/7610], loss=1.3687
+Train [Time: 1.36 hours] [Loss: 1.3503]
+Time spent total at [2/100]: 2.73
+Epoch [3/100]
+Training...
+Current learning rate: 1.0000e-03
+[3][0/7610], loss=1.2340
+[3][762/7610], loss=1.2030
+[3][1524/7610], loss=1.1840
+[3][2286/7610], loss=1.1742
+[3][3048/7610], loss=1.1642
+[3][3810/7610], loss=1.1570
+[3][4572/7610], loss=1.1503
+[3][5334/7610], loss=1.1417
+[3][6096/7610], loss=1.1330
+[3][6858/7610], loss=1.1248
+Train [Time: 1.35 hours] [Loss: 1.1170]
+Time spent total at [3/100]: 4.09
+Epoch [4/100]
+Training...
+Current learning rate: 1.0000e-03
+[4][0/7610], loss=1.0647
+[4][762/7610], loss=1.0377
+[4][1524/7610], loss=1.0332
+[4][2286/7610], loss=1.0277
+[4][3048/7610], loss=1.0228
+[4][3810/7610], loss=1.0199
+[4][4572/7610], loss=1.0173
+[4][5334/7610], loss=1.0146
+[4][6096/7610], loss=1.0116
+[4][6858/7610], loss=1.0082
+Train [Time: 1.35 hours] [Loss: 1.0040]
+Time spent total at [4/100]: 5.44
+Epoch [5/100]
+Training...
+Current learning rate: 1.0000e-03
+[5][0/7610], loss=0.9467
+[5][762/7610], loss=1.0289
+[5][1524/7610], loss=1.0193
+[5][2286/7610], loss=0.9566
+[5][3048/7610], loss=0.9141
+[5][3810/7610], loss=0.8751
+[5][4572/7610], loss=0.8405
+[5][5334/7610], loss=0.8008
+[5][6096/7610], loss=0.7643
+[5][6858/7610], loss=0.7315
+Train [Time: 1.35 hours] [Loss: 0.7024]
+Time spent total at [5/100]: 6.79
+Epoch [6/100]
+Training...
+Current learning rate: 1.0000e-03
+[6][0/7610], loss=0.4223
+[6][762/7610], loss=0.4142
+[6][1524/7610], loss=0.4072
+[6][2286/7610], loss=0.4713
+[6][3048/7610], loss=0.4550
+[6][3810/7610], loss=0.4401
+[6][4572/7610], loss=0.4290
+[6][5334/7610], loss=0.4203
+[6][6096/7610], loss=0.4133
+[6][6858/7610], loss=0.4108
+Train [Time: 1.35 hours] [Loss: 0.4058]
+Time spent total at [6/100]: 8.14
+Epoch [7/100]
+Training...
+Current learning rate: 1.0000e-03
+[7][0/7610], loss=0.3567
+[7][762/7610], loss=0.3549
+[7][1524/7610], loss=0.3523
+[7][2286/7610], loss=0.3510
+[7][3048/7610], loss=0.3495
+[7][3810/7610], loss=0.3483
+[7][4572/7610], loss=0.3472
+[7][5334/7610], loss=0.3462
+[7][6096/7610], loss=0.3454
+[7][6858/7610], loss=0.3447
+Train [Time: 1.35 hours] [Loss: 0.3441]
+Time spent total at [7/100]: 9.49
+Epoch [8/100]
+Training...
+Current learning rate: 1.0000e-03
+[8][0/7610], loss=0.3447
+[8][762/7610], loss=0.3387
+[8][1524/7610], loss=0.3389
+[8][2286/7610], loss=0.3507
+[8][3048/7610], loss=0.3480
+[8][3810/7610], loss=0.3458
+[8][4572/7610], loss=0.3444
+[8][5334/7610], loss=0.3435
+[8][6096/7610], loss=0.3428
+[8][6858/7610], loss=0.3424
+Train [Time: 1.35 hours] [Loss: 0.3420]
+Time spent total at [8/100]: 10.84
+Epoch [9/100]
+Training...
+Current learning rate: 1.0000e-03
+[9][0/7610], loss=0.3387
+[9][762/7610], loss=0.3950
+[9][1524/7610], loss=0.3676
+[9][2286/7610], loss=0.3576
+[9][3048/7610], loss=0.3526
+[9][3810/7610], loss=0.3497
+[9][4572/7610], loss=0.3477
+[9][5334/7610], loss=0.3464
+[9][6096/7610], loss=0.3454
+[9][6858/7610], loss=0.3448
+Train [Time: 1.34 hours] [Loss: 0.3441]
+Time spent total at [9/100]: 12.19
+Epoch [10/100]
+Training...
+Current learning rate: 1.0000e-03
+[10][0/7610], loss=0.3378
+[10][762/7610], loss=0.3382
+[10][1524/7610], loss=0.3385
+[10][2286/7610], loss=0.3523
+[10][3048/7610], loss=0.3500
+[10][3810/7610], loss=0.3474
+[10][4572/7610], loss=0.3457
+[10][5334/7610], loss=0.3446
+[10][6096/7610], loss=0.3438
+[10][6858/7610], loss=0.3435
+Train [Time: 1.34 hours] [Loss: 0.3429]
+Time spent total at [10/100]: 13.53
+Epoch [11/100]
+Training...
+Current learning rate: 1.0000e-03
+[11][0/7610], loss=0.3391
+[11][762/7610], loss=0.3381
+[11][1524/7610], loss=0.3380
+[11][2286/7610], loss=0.3384
+[11][3048/7610], loss=0.3384
+[11][3810/7610], loss=0.3383
+[11][4572/7610], loss=0.3384
+[11][5334/7610], loss=0.3384
+[11][6096/7610], loss=0.3384
+[11][6858/7610], loss=0.3384
+Train [Time: 1.34 hours] [Loss: 0.3393]
+Time spent total at [11/100]: 14.87
+Epoch [12/100]
+Training...
+Current learning rate: 1.0000e-03
+[12][0/7610], loss=0.4891
+[12][762/7610], loss=0.3461
+[12][1524/7610], loss=0.3415
+[12][2286/7610], loss=0.3401
+[12][3048/7610], loss=0.3396
+[12][3810/7610], loss=0.3393
+[12][4572/7610], loss=0.3391
+[12][5334/7610], loss=0.3390
+[12][6096/7610], loss=0.3389
+[12][6858/7610], loss=0.3390
+Train [Time: 1.34 hours] [Loss: 0.3389]
+Time spent total at [12/100]: 16.22
+Epoch [13/100]
+Training...
+Current learning rate: 1.0000e-03
+[13][0/7610], loss=0.3396
+[13][762/7610], loss=0.3383
+[13][1524/7610], loss=0.3383
+[13][2286/7610], loss=0.3384
+[13][3048/7610], loss=0.3386
+[13][3810/7610], loss=0.3385
+[13][4572/7610], loss=0.3435
+[13][5334/7610], loss=0.3439
+[13][6096/7610], loss=0.3430
+[13][6858/7610], loss=0.3424
+Train [Time: 1.34 hours] [Loss: 0.3419]
+Time spent total at [13/100]: 17.56
+Epoch [14/100]
+Training...
+Current learning rate: 1.0000e-03
+[14][0/7610], loss=0.3359
+[14][762/7610], loss=0.3377
+[14][1524/7610], loss=0.3378
+[14][2286/7610], loss=0.3465
+[14][3048/7610], loss=0.3441
+[14][3810/7610], loss=0.3427
+[14][4572/7610], loss=0.3418
+[14][5334/7610], loss=0.3413
+[14][6096/7610], loss=0.3408
+[14][6858/7610], loss=0.3405
+Train [Time: 1.34 hours] [Loss: 0.3403]
+Time spent total at [14/100]: 18.90
+Epoch [15/100]
+Training...
+Current learning rate: 1.0000e-03
+[15][0/7610], loss=0.3391
+[15][762/7610], loss=0.3384
+[15][1524/7610], loss=0.3432
+[15][2286/7610], loss=0.3412
+[15][3048/7610], loss=0.3402
+[15][3810/7610], loss=0.3398
+[15][4572/7610], loss=0.3395
+[15][5334/7610], loss=0.3393
+[15][6096/7610], loss=0.3393
+[15][6858/7610], loss=0.3392
+Train [Time: 1.34 hours] [Loss: 0.3392]
+Time spent total at [15/100]: 20.24
+Epoch [16/100]
+Training...
+Current learning rate: 1.0000e-03
+[16][0/7610], loss=0.3376
+[16][762/7610], loss=0.3380
+[16][1524/7610], loss=0.3383
+[16][2286/7610], loss=0.3509
+[16][3048/7610], loss=0.3480
+[16][3810/7610], loss=0.3458
+[16][4572/7610], loss=0.3444
+[16][5334/7610], loss=0.3435
+[16][6096/7610], loss=0.3428
+[16][6858/7610], loss=0.3422
+Train [Time: 1.34 hours] [Loss: 0.3418]
+Time spent total at [16/100]: 21.58
+Epoch [17/100]
+Training...
+Current learning rate: 1.0000e-03
+[17][0/7610], loss=0.3400
+[17][762/7610], loss=0.3385
+[17][1524/7610], loss=0.3384
+[17][2286/7610], loss=0.3385
+[17][3048/7610], loss=0.3386
+[17][3810/7610], loss=0.3386
+[17][4572/7610], loss=0.3386
+[17][5334/7610], loss=0.3401
+[17][6096/7610], loss=0.3398
+[17][6858/7610], loss=0.3395
+Train [Time: 1.34 hours] [Loss: 0.3394]
+Time spent total at [17/100]: 22.92
+Epoch [18/100]
+Training...
+Current learning rate: 1.0000e-04
+[18][0/7610], loss=0.3369
+[18][762/7610], loss=0.3382
+[18][1524/7610], loss=0.3381
+[18][2286/7610], loss=0.3382
+[18][3048/7610], loss=0.3383
+[18][3810/7610], loss=0.3384
+[18][4572/7610], loss=0.3384
+[18][5334/7610], loss=0.3384
+[18][6096/7610], loss=0.3384
+[18][6858/7610], loss=0.3385
+Train [Time: 1.34 hours] [Loss: 0.3411]
+Time spent total at [18/100]: 24.27
+Epoch    18: reducing learning rate of group 0 to 1.0000e-04.
+Epoch [19/100]
+Training...
+Current learning rate: 1.0000e-04
+[19][0/7610], loss=0.3385
+[19][762/7610], loss=0.3373
+[19][1524/7610], loss=0.3369
+[19][2286/7610], loss=0.3367
+[19][3048/7610], loss=0.3366
+[19][3810/7610], loss=0.3366
+[19][4572/7610], loss=0.3365
+[19][5334/7610], loss=0.3365
+[19][6096/7610], loss=0.3364
+[19][6858/7610], loss=0.3364
+Train [Time: 1.34 hours] [Loss: 0.3364]
+Time spent total at [19/100]: 25.61
+Epoch [20/100]
+Training...
+Current learning rate: 1.0000e-04
+[20][0/7610], loss=0.3365
+[20][762/7610], loss=0.3363
+[20][1524/7610], loss=0.3363
+[20][2286/7610], loss=0.3362
+[20][3048/7610], loss=0.3362
+[20][3810/7610], loss=0.3362
+[20][4572/7610], loss=0.3362
+[20][5334/7610], loss=0.3362
+[20][6096/7610], loss=0.3363
+[20][6858/7610], loss=0.3362
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [20/100]: 26.95
+Epoch [21/100]
+Training...
+Current learning rate: 1.0000e-04
+[21][0/7610], loss=0.3368
+[21][762/7610], loss=0.3362
+[21][1524/7610], loss=0.3362
+[21][2286/7610], loss=0.3362
+[21][3048/7610], loss=0.3362
+[21][3810/7610], loss=0.3362
+[21][4572/7610], loss=0.3362
+[21][5334/7610], loss=0.3362
+[21][6096/7610], loss=0.3362
+[21][6858/7610], loss=0.3362
+Train [Time: 1.34 hours] [Loss: 0.3362]
+Time spent total at [21/100]: 28.29
+Epoch [22/100]
+Training...
+Current learning rate: 1.0000e-04
+[22][0/7610], loss=0.3366
+[22][762/7610], loss=0.3363
+[22][1524/7610], loss=0.3363
+[22][2286/7610], loss=0.3363
+[22][3048/7610], loss=0.3363
+[22][3810/7610], loss=0.3363
+[22][4572/7610], loss=0.3363
+[22][5334/7610], loss=0.3363
+[22][6096/7610], loss=0.3363
+[22][6858/7610], loss=0.3363
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [22/100]: 29.63
+Epoch [23/100]
+Training...
+Current learning rate: 1.0000e-04
+[23][0/7610], loss=0.3369
+[23][762/7610], loss=0.3362
+[23][1524/7610], loss=0.3362
+[23][2286/7610], loss=0.3362
+[23][3048/7610], loss=0.3362
+[23][3810/7610], loss=0.3362
+[23][4572/7610], loss=0.3362
+[23][5334/7610], loss=0.3362
+[23][6096/7610], loss=0.3363
+[23][6858/7610], loss=0.3362
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [23/100]: 30.97
+Epoch [24/100]
+Training...
+Current learning rate: 1.0000e-04
+[24][0/7610], loss=0.3353
+[24][762/7610], loss=0.3363
+[24][1524/7610], loss=0.3362
+[24][2286/7610], loss=0.3363
+[24][3048/7610], loss=0.3362
+[24][3810/7610], loss=0.3362
+[24][4572/7610], loss=0.3363
+[24][5334/7610], loss=0.3363
+[24][6096/7610], loss=0.3363
+[24][6858/7610], loss=0.3363
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [24/100]: 32.31
+Epoch [25/100]
+Training...
+Current learning rate: 1.0000e-04
+[25][0/7610], loss=0.3360
+[25][762/7610], loss=0.3362
+[25][1524/7610], loss=0.3362
+[25][2286/7610], loss=0.3363
+[25][3048/7610], loss=0.3363
+[25][3810/7610], loss=0.3363
+[25][4572/7610], loss=0.3363
+[25][5334/7610], loss=0.3363
+[25][6096/7610], loss=0.3363
+[25][6858/7610], loss=0.3363
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [25/100]: 33.65
+Epoch [26/100]
+Training...
+Current learning rate: 1.0000e-05
+[26][0/7610], loss=0.3373
+[26][762/7610], loss=0.3363
+[26][1524/7610], loss=0.3363
+[26][2286/7610], loss=0.3363
+[26][3048/7610], loss=0.3363
+[26][3810/7610], loss=0.3363
+[26][4572/7610], loss=0.3363
+[26][5334/7610], loss=0.3363
+[26][6096/7610], loss=0.3363
+[26][6858/7610], loss=0.3363
+Train [Time: 1.34 hours] [Loss: 0.3363]
+Time spent total at [26/100]: 35.00
+Epoch    26: reducing learning rate of group 0 to 1.0000e-05.
+Epoch [27/100]
+Training...
+Current learning rate: 1.0000e-05
+[27][0/7610], loss=0.3361
+[27][762/7610], loss=0.3361
+[27][1524/7610], loss=0.3361
+[27][2286/7610], loss=0.3361
+[27][3048/7610], loss=0.3361
+[27][3810/7610], loss=0.3361
+[27][4572/7610], loss=0.3361
+[27][5334/7610], loss=0.3361
+[27][6096/7610], loss=0.3361
+[27][6858/7610], loss=0.3361
+Train [Time: 1.34 hours] [Loss: 0.3361]
+Time spent total at [27/100]: 36.34
+Epoch [28/100]
+Training...
+Current learning rate: 1.0000e-05
+[28][0/7610], loss=0.3365
+[28][762/7610], loss=0.3361
+[28][1524/7610], loss=0.3361
+[28][2286/7610], loss=0.3361
+[28][3048/7610], loss=0.3361
+[28][3810/7610], loss=0.3361
+[28][4572/7610], loss=0.3361
+[28][5334/7610], loss=0.3361
+[28][6096/7610], loss=0.3361
+[28][6858/7610], loss=0.3361
+Train [Time: 1.34 hours] [Loss: 0.3361]
+Time spent total at [28/100]: 37.68
+Epoch [29/100]
+Training...
+Current learning rate: 1.0000e-05
+[29][0/7610], loss=0.3362
+[29][762/7610], loss=0.3361
+[29][1524/7610], loss=0.3361
+[29][2286/7610], loss=0.3361
+[29][3048/7610], loss=0.3361
+[29][3810/7610], loss=0.3361
+[29][4572/7610], loss=0.3361
+[29][5334/7610], loss=0.3361
+[29][6096/7610], loss=0.3361
+[29][6858/7610], loss=0.3361
+Train [Time: 1.34 hours] [Loss: 0.3361]
+Time spent total at [29/100]: 39.02
+Epoch [30/100]
+Training...
+Current learning rate: 1.0000e-05
+[30][0/7610], loss=0.3353
+[30][762/7610], loss=0.3361
+[30][1524/7610], loss=0.3361
+[30][2286/7610], loss=0.3361
+[30][3048/7610], loss=0.3361
+[30][3810/7610], loss=0.3361
+[30][4572/7610], loss=0.3361
+[30][5334/7610], loss=0.3361
+[30][6096/7610], loss=0.3361
+[30][6858/7610], loss=0.3361
+Train [Time: 1.34 hours] [Loss: 0.3361]
+Time spent total at [30/100]: 40.36
+Epoch [31/100]
+Training...

@@ -10,19 +10,12 @@ import dataproc_double as dp
 from utils import AverageMeter, show_tensor_img, set_logger, vis_ms, vis_single_channel, save_checkpoint, precision_recall_multi_class_pytorch, mean_iou
 from torch.utils.tensorboard import SummaryWriter
 import os
-# from dae import CNNDAE as Model
 import dae
-from SRCNN import make_model
 
 import argparse
 import cv2
 import numpy as np
 from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
-from sklearn.model_selection import cross_val_score
-from sklearn.utils import resample
-from sklearn.cluster import KMeans
-from sklearn.manifold import TSNE
-from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 
 
@@ -32,11 +25,11 @@ parser.add_argument('-t', '--train_batch_size', type=int, default=32)
 parser.add_argument('-e', '--n_epochs', type=int, default=300)
 parser.add_argument('--lr', type=float, default=1e-4, help="learning rate")
 parser.add_argument('--wd', type=float, default=1e-6, help="weight decay")
-parser.add_argument('--pretrained_model', type=str, default="output_dir/dual_1/model_best.pth.tar", help="path to pre-trained model")
-parser.add_argument('--checkpoint', type=str, default="output_dir/seg_vit_edge/model_best.pth.tar", help="path to resume training")
-parser.add_argument('--data_path', type=str, default= "/home/bpeng/mnt/mnt242/scdm_data/xBD/xbd_disasters_building_polygons_neighbors")
-parser.add_argument('--csv_train', type=str, default='csvs_buffer/sub_train_wo_unclassified.csv', help='train csv sub-path within data path')
-parser.add_argument('--csv_eval', type=str, default='csvs_buffer/sub_valid_wo_unclassified.csv', help='train csv sub-path within data path')
+parser.add_argument('--pretrained_model', type=str, default="", help="path to pre-trained model")
+parser.add_argument('--checkpoint', type=str, default="", help="path to resume training")
+parser.add_argument('--data_path', type=str, default= "")
+parser.add_argument('--csv_train', type=str, default='', help='train csv sub-path within data path')
+parser.add_argument('--csv_eval', type=str, default='', help='train csv sub-path within data path')
 parser.add_argument('--print_freq', type=int, default=100, help="print evaluation for every n iterations")
 parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
 
@@ -58,22 +51,6 @@ parser.add_argument('--n_last_blocks', default=4, type=int, help="""Concatenate 
 parser.add_argument('--norm_pix_loss', action='store_true',
                         help='Use (per-patch) normalized pixels as targets for computing loss')
 parser.set_defaults(norm_pix_loss=False)
-
-# SR model paras
-parser.add_argument('--rgb_range', type=int, default=255,
-                    help='maximum value of RGB')
-parser.add_argument('--n_colors', type=int, default=3,
-                    help='number of color channels to use')
-parser.add_argument('--scale', type=int, default=2,
-                    help='super resolution scale')
-parser.add_argument('--n_resblocks', type=int, default=16,
-                    help='number of residual blocks')
-parser.add_argument('--n_feats', type=int, default=32,
-                    help='number of feature maps')
-parser.add_argument('--res_scale', type=float, default=0.1,
-                    help='residual scaling')
-parser.add_argument('--shift_mean', default=True,
-                    help='subtract pixel mean from the input')
 
 def main(args):
 
@@ -114,13 +91,6 @@ def main(args):
     print(device)
 
     # net = Model().to(device=device)
-    '''
-    edsr = make_model(args).to(device=device)
-    net = dae.DualAutoencoderViTSR(srmodel=edsr, img_size=args.input_size,
-        patch_size=args.patch_size, embed_dim=768, depth=12, num_heads=12,
-        decoder_embed_dim=512, decoder_depth=8, decoder_num_heads=16,
-        mlp_ratio=4, norm_pix_loss=args.norm_pix_loss).to(device=device)
-    '''
     net = dae.DualAutoencoderViT(img_size=args.input_size,
         patch_size=args.patch_size, embed_dim=768, depth=12, num_heads=12,
         decoder_embed_dim=512, decoder_depth=8, decoder_num_heads=16,
@@ -247,7 +217,7 @@ def train_classifier(model, optimizer, criterion, dataloader, device, epoch, pri
         bldg_pre_mask = batch['pre_mask'].float().to(device=device).unsqueeze(1)
         bldg_post_mask = batch['post_mask'].float().to(device=device).unsqueeze(1)
 
-        # 将1, 2, 3, 4类别转换为1，其他类别保持为0
+        # 
         bldg_post_mask = torch.where(bldg_post_mask > 0, torch.tensor(1.0, device=device), torch.tensor(0.0, device=device))
         bldg_pre_mask = torch.where(bldg_pre_mask > 0, torch.tensor(1.0, device=device), torch.tensor(0.0, device=device))
 
@@ -314,7 +284,7 @@ def validate_network(criterion, dataloader, model, device, epoch, print_freq=5):
         bldg_post = batch['bldg_post'].to(device=device, dtype=torch.float32)
         bldg_pre_mask = batch['pre_mask'].float().to(device=device).unsqueeze(1)
         bldg_post_mask = batch['post_mask'].float().to(device=device).unsqueeze(1)
-        # 将1, 2, 3, 4类别转换为1，其他类别保持为0
+        # 
         bldg_post_mask = torch.where(bldg_post_mask > 0, torch.tensor(1.0, device=device), torch.tensor(0.0, device=device))
         bldg_pre_mask = torch.where(bldg_pre_mask > 0, torch.tensor(1.0, device=device), torch.tensor(0.0, device=device))
 
@@ -428,67 +398,6 @@ class FPN(nn.Module):
         out = nn.functional.interpolate(out, scale_factor=4, mode='bilinear', align_corners=True)  # Upsample to original size
 
         return out
-
-'''
-class ViT_FPN(nn.Module):
-    def __init__(self, model):
-        super().__init__()
-        self.patch_embed = model.patch_embed
-        self.pos_embed = model.pos_embed
-        self.cls_token = model.cls_token
-        self.blocks = model.blocks
-        self.norm = model.norm
-        self.get_intermediate_layers = model.get_intermediate_layers
-
-        self.vit = model
-        self.fpn = FPN()
-
-        # 1. Define the Hybrid Attention Block
-        # self.hybrid_attention = CBAM(channels=6, r=3) 
-        # self.hybrid_attention = HeHybridAttentionBlock(in_channels=6)
-
-        # 2. Define the Dual Attention Block
-        # self.pam = PAM_Module(in_dim=6)
-        # self.cam = CAM_Module(in_dim=6)
-
-        for param in self.vit.parameters():
-            param.requires_grad = False
-        
-    def forward(self, pre_img, post_img):
-        # Extract features from both images
-        pre_vit_features = self.vit.get_encoder_layers(pre_img)
-        post_vit_features = self.vit.get_encoder_layers(post_img)
-
-        # Remove the class token
-        pre_vit_features = pre_vit_features[:, 1:]
-        post_vit_features = post_vit_features[:, 1:]
-
-        # Unpatchify
-        pre_latent = self.vit.unpatchify(pre_vit_features)
-        post_latent = self.vit.unpatchify(post_vit_features)
-
-        # SR features
-        pre_sr = self.vit.SuperRe(pre_img)
-        post_sr = self.vit.SuperRe(post_img)
-        spp_pre = F.adaptive_max_pool2d(pre_sr, output_size=pre_latent.shape[2])
-        spp_post = F.adaptive_max_pool2d(post_sr, output_size=pre_latent.shape[2]) # 3, 224, 224
-        
-        # Concatenate the features along the channel dimension
-        latent = torch.cat([pre_latent, post_latent, spp_pre, spp_post], dim=1)
-
-        # 1. Apply the Hybrid Attention Block
-        # latent = self.hybrid_attention(latent)
-
-        # 2. Apply the Dual Attention Block
-        # pam_out = self.pam(latent)
-        # cam_out = self.cam(latent)
-        # latent = pam_out + cam_out
-
-        # Pass through FPN
-        output = self.fpn(latent)
-
-        return output
-'''
 
 class EdgeGuidanceModule(nn.Module):
     def __init__(self, in_channels):
@@ -610,78 +519,6 @@ class CombinedLoss(nn.Module):
         fl = self.focal_loss(edge_prob, edges)
         dl = self.dice_loss(building_prob, buildings)
         return (1 - self.dice_weight) * fl + self.dice_weight * dl
-    
-class PAM_Module(nn.Module):
-    """ Position attention module"""
-    def __init__(self, in_dim):
-        super(PAM_Module, self).__init__()
-        self.chanel_in = in_dim
-
-        self.query_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim // 2, kernel_size=1)
-        self.key_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim // 2, kernel_size=1)
-        self.value_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim, kernel_size=1)
-        self.gamma = nn.Parameter(torch.zeros(1))
-
-        self.softmax = nn.Softmax(dim=-1)
-
-    def forward(self, x):
-        """
-            inputs :
-                x : input feature maps ( B X C X H X W)
-            returns :
-                out : attention value + input feature
-                attention: B X (HxW) X (HxW)
-        """
-        m_batchsize, C, height, width = x.size()
-        proj_query = self.query_conv(x).view(m_batchsize, -1, width * height).permute(0, 2, 1)
-        proj_key = self.key_conv(x).view(m_batchsize, -1, width * height)
-        energy = torch.bmm(proj_query, proj_key)
-        attention = self.softmax(energy)
-        proj_value = self.value_conv(x).view(m_batchsize, -1, width * height)
-
-        out = torch.bmm(proj_value, attention.permute(0, 2, 1))
-        out = out.view(m_batchsize, C, height, width)
-
-        out = self.gamma * out + x
-        return out
-
-class CAM_Module(nn.Module):
-    """ Channel attention module"""
-    def __init__(self, in_dim):
-        super(CAM_Module, self).__init__()
-        self.chanel_in = in_dim
-
-        self.gamma = nn.Parameter(torch.zeros(1))
-        self.softmax = nn.Softmax(dim=-1)
-
-    def forward(self, x):
-        """
-            inputs :
-                x : input feature maps( B X C X H X W)
-            returns :
-                out : attention value + input feature
-                attention: B X C X C
-        """
-        m_batchsize, C, height, width = x.size()
-        proj_query = x.view(m_batchsize, C, -1)
-        proj_key = x.view(m_batchsize, C, -1).permute(0, 2, 1)
-        energy = torch.bmm(proj_query, proj_key)
-        energy_new = torch.max(energy, -1, keepdim=True)[0].expand_as(energy) - energy
-        attention = self.softmax(energy_new)
-        proj_value = x.view(m_batchsize, C, -1)
-
-        out = torch.bmm(attention, proj_value)
-        out = out.view(m_batchsize, C, height, width)
-
-        out = self.gamma * out + x
-        return out
-
-# 定义Pareto前沿权重更新函数
-def update_weights(losses, epsilon=0.01):
-    norm_losses = losses / torch.sum(losses)
-    weights = torch.exp(norm_losses / epsilon)
-    weights = weights / torch.sum(weights)
-    return weights
 
 def sobel_edge_detection(image, device):
     sobel_kernel_x = torch.tensor([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=torch.float32).unsqueeze(0).unsqueeze(0)

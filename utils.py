@@ -63,6 +63,18 @@ def vis_ms(img_ms, r, g, b):
     )
     return img_ms_subspec
 
+def vis_single_channel(img, channel):
+    """
+    :param img: tensor images [B, C, H, W]
+    :param channel: int
+    :return:
+    """
+    # extract the specified channel from the image
+    img_subspec = img[:, channel].unsqueeze(1)
+     # apply threshold to create a binary map
+    img_subspec = (img_subspec > 0.5).float()
+
+    return img_subspec
 
 def overall_accuracy_pytorch(y_pred, y_true):
     """
@@ -348,6 +360,25 @@ def compute_gradient_similarity(pre, recon):
 
 def harmonic_mean(values):
     return len(values) / sum(1.0 / val for val in values)
+
+def calculate_iou(pred, target, threshold=0.5):
+    pred = (pred > threshold).float()
+    intersection = (pred * target).sum()
+    union = pred.sum() + target.sum() - intersection
+    if union == 0:
+        return float('nan')  # 如果union为0，返回NaN
+    else:
+        return intersection / union
+
+def mean_iou(preds, targets, threshold=0.5):
+    ious = []
+    for pred, target in zip(preds, targets):
+        iou = calculate_iou(pred, target, threshold)
+        if not torch.isnan(iou):
+            ious.append(iou)
+    if len(ious) == 0:
+        return float('nan')
+    return sum(ious) / len(ious)
 
 def show_tensor_img(img, str_title=""):
     """

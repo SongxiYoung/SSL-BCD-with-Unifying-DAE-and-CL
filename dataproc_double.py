@@ -50,11 +50,16 @@ class xBD_Building_Polygon_TwoSides_PrePost(Dataset):
         # Flatten list of resampled indices
         self.resampled_indices = np.concatenate(resampled_indices)
 
+        class_labels = self.df.loc[self.resampled_indices, 'bldg_damage_code']
+        self.class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(class_labels), y=class_labels)
+
     def __len__(self):
         if self.eval_mode:
             return len(self.resampled_indices)
         else:
             return len(self.df)
+        # return len(self.df)
+
 
     def __getitem__(self, idx):
         if self.eval_mode:
@@ -132,12 +137,12 @@ class xBD_Building_Mask_TwoSides_PrePost(Dataset):
         # Pre-disaster mask
         pre_mask_name = '{}_{}'.format(bldg_uuid, 'pre_disaster.png')
         pre_mask_path = os.path.join(self.data_path, 'masks_buffer', disaster_type, pre_mask_name)
-        pre_mask = np.array(Image.open(pre_mask_path), dtype=np.uint8)
+        pre_mask = np.array(cv2.imread(pre_mask_path, cv2.IMREAD_GRAYSCALE))
 
         # Post-disaster mask
         post_mask_name = '{}_{}'.format(bldg_uuid, 'post_disaster.png')
         post_mask_path = os.path.join(self.data_path, 'masks_buffer', disaster_type, post_mask_name)
-        post_mask = np.array(Image.open(post_mask_path), dtype=np.uint8)
+        post_mask = np.array(cv2.imread(post_mask_path, cv2.IMREAD_GRAYSCALE))
 
         sample = {
             'uuid': bldg_uuid,
@@ -260,11 +265,27 @@ class RandomFlip(object):
         self.p=p
 
     def __call__(self, sample):
+        flip_horizontal = random.random() <= self.p
+        flip_vertical = random.random() <= self.p
+
         for s in ['bldg_pre', 'bldg_post']:
-            if random.random() <= self.p:
+            if flip_horizontal:
                 sample[s] = cv2.flip(sample[s], 1) # horizontal
-            if random.random() <= self.p:
+            if flip_vertical:
                 sample[s] = cv2.flip(sample[s], 0) # vertical
+
+        if 'pre_mask' in sample and sample['pre_mask'] is not None:
+            if flip_horizontal:
+                sample['pre_mask'] = cv2.flip(sample['pre_mask'], 1)
+            if flip_vertical:
+                sample['pre_mask'] = cv2.flip(sample['pre_mask'], 0)
+
+        if 'post_mask' in sample and sample['post_mask'] is not None:
+            if flip_horizontal:
+                sample['post_mask'] = cv2.flip(sample['post_mask'], 1)
+            if flip_vertical:
+                sample['post_mask'] = cv2.flip(sample['post_mask'], 0)
+
         return sample
 
     def __repr__(self):
@@ -280,6 +301,11 @@ class Resize(object):
     def __call__(self, sample):
         for s in ['bldg_pre', 'bldg_post']:
             sample[s] = cv2.resize(sample[s], self.size, interpolation=cv2.INTER_LINEAR)
+        # Check if masks exist and resize
+        if 'pre_mask' in sample and sample['pre_mask'] is not None:
+            sample['pre_mask'] = cv2.resize(sample['pre_mask'], self.size, interpolation=cv2.INTER_LINEAR)
+        if 'post_mask' in sample and sample['post_mask'] is not None:
+            sample['post_mask'] = cv2.resize(sample['post_mask'], self.size, interpolation=cv2.INTER_LINEAR)
         return sample
 
     def __repr__(self):
@@ -512,7 +538,7 @@ class Normalize_Std(object):
     def __call__(self, sample):
         sample['bldg_pre'] = self.normalize_pre(sample['bldg_pre'])
         sample['bldg_post'] = self.normalize_post(sample['bldg_post'])
-
+        
         return sample
 
     def __repr__(self):

@@ -10,9 +10,7 @@ import dataproc_double as dp
 from utils import AverageMeter, show_tensor_img, set_logger, vis_ms, vis_single_channel, save_checkpoint, precision_recall_multi_class_pytorch, mean_iou, vis_single_channel_multiclasses
 from torch.utils.tensorboard import SummaryWriter
 import os
-# from dae import CNNDAE as Model
 import dae
-from SRCNN import make_model
 
 import argparse
 import cv2
@@ -26,12 +24,12 @@ parser.add_argument('-t', '--train_batch_size', type=int, default=32)
 parser.add_argument('-e', '--n_epochs', type=int, default=300)
 parser.add_argument('--lr', type=float, default=1e-4, help="learning rate")
 parser.add_argument('--wd', type=float, default=1e-6, help="weight decay")
-parser.add_argument('--pretrained_model', type=str, default="output_dir/dual_1/model_best.pth.tar", help="path to pre-trained model")
-parser.add_argument('--fpn_checkpoint', type=str, default="output_dir/seg_vit_edgepre/model_best.pth.tar", help="path to resume fpn training")
-parser.add_argument('--checkpoint', type=str, default="output_dir/multitaskedge_res_fpn/multi_checkpoint_ep_9.pth.tar", help="path to resume assessment training")
-parser.add_argument('--data_path', type=str, default= "/home/bpeng/mnt/mnt242/scdm_data/xBD/xbd_disasters_building_polygons_neighbors")
-parser.add_argument('--csv_train', type=str, default='csvs_buffer/sub_train_wo_unclassified.csv', help='train csv sub-path within data path')
-parser.add_argument('--csv_eval', type=str, default='csvs_buffer/sub_valid_wo_unclassified.csv', help='train csv sub-path within data path')
+parser.add_argument('--pretrained_model', type=str, default="", help="path to pre-trained model")
+parser.add_argument('--fpn_checkpoint', type=str, default="", help="path to resume fpn training")
+parser.add_argument('--checkpoint', type=str, default="", help="path to resume assessment training")
+parser.add_argument('--data_path', type=str, default= "")
+parser.add_argument('--csv_train', type=str, default='', help='train csv sub-path within data path')
+parser.add_argument('--csv_eval', type=str, default='', help='train csv sub-path within data path')
 parser.add_argument('--print_freq', type=int, default=100, help="print evaluation for every n iterations")
 parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
 
@@ -54,21 +52,6 @@ parser.add_argument('--norm_pix_loss', action='store_true',
                         help='Use (per-patch) normalized pixels as targets for computing loss')
 parser.set_defaults(norm_pix_loss=False)
 
-# SR model paras
-parser.add_argument('--rgb_range', type=int, default=255,
-                    help='maximum value of RGB')
-parser.add_argument('--n_colors', type=int, default=3,
-                    help='number of color channels to use')
-parser.add_argument('--scale', type=int, default=2,
-                    help='super resolution scale')
-parser.add_argument('--n_resblocks', type=int, default=16,
-                    help='number of residual blocks')
-parser.add_argument('--n_feats', type=int, default=32,
-                    help='number of feature maps')
-parser.add_argument('--res_scale', type=float, default=0.1,
-                    help='residual scaling')
-parser.add_argument('--shift_mean', default=True,
-                    help='subtract pixel mean from the input')
 
 def main(args):
 
@@ -510,7 +493,7 @@ class ViT_BDA(nn.Module):
         self.egm = EdgeGuidanceModule(in_channels=256) 
         # task 2 stage
         self.base_model = models.resnet50(pretrained=True)
-        # 提取 ResNet 的前四个阶段
+        
         self.layer1 = nn.Sequential(
             self.base_model.conv1,
             self.base_model.bn1,
@@ -522,27 +505,21 @@ class ViT_BDA(nn.Module):
         self.layer3 = self.base_model.layer3
         self.layer4 = self.base_model.layer4
 
-        # 降维的 1x1 卷积层
+       
         self.reduce_dim1 = nn.Conv2d(256, 64, kernel_size=1)
         self.reduce_dim2 = nn.Conv2d(512, 64, kernel_size=1)
         self.reduce_dim3 = nn.Conv2d(1024, 64, kernel_size=1)
         self.reduce_dim4 = nn.Conv2d(2048, 64, kernel_size=1)
 
-        # 定义上采样层
+        
         self.upsample = nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True)
         
-        # 分类头：输入通道数为4个特征图的总和+1个预测的边缘图
+        
         self.classifier = nn.Conv2d(64+64+64+64 + 1, 5, kernel_size=1)
 
         # Freeze the pretrained model
         for param in self.vit.parameters():
             param.requires_grad = False
-
-        # for param in self.fpn_pre.parameters():
-          #   param.requires_grad = False
-
-        # for param in self.egm.parameters():
-          #   param.requires_grad = False
         
     def forward(self, pre_img, post_img):
         # Extract features from both images
@@ -562,28 +539,28 @@ class ViT_BDA(nn.Module):
         pre_edge, pre_mask = self.egm(fpn_pre)
 
         # task 2: damage classification using pre_post features
-        # 通过每一层提取特征
-        x1 = self.layer1(post_latent)  # 输出形状：[B, 256, 56, 56]
-        x2 = self.layer2(x1) # 输出形状：[B, 512, 28, 28]
-        x3 = self.layer3(x2) # 输出形状：[B, 1024, 14, 14]
-        x4 = self.layer4(x3) # 输出形状：[B, 2048, 7, 7]
+       
+        x1 = self.layer1(post_latent)  # [B, 256, 56, 56]
+        x2 = self.layer2(x1) # [B, 512, 28, 28]
+        x3 = self.layer3(x2) # [B, 1024, 14, 14]
+        x4 = self.layer4(x3) # [B, 2048, 7, 7]
 
-        # 降维
+        
         x1_reduced = self.reduce_dim1(x1)  # [B, 3, H1, W1]
         x2_reduced = self.reduce_dim2(x2)  # [B, 3, H2, W2]
         x3_reduced = self.reduce_dim3(x3)  # [B, 3, H3, W3]
         x4_reduced = self.reduce_dim4(x4)  # [B, 3, H4, W4]
 
-        # 上采样到相同大小
+        
         x1_upsampled = self.upsample(x1_reduced)  # [B, reduced_channels, 224, 224]
         x2_upsampled = self.upsample(x2_reduced)  # [B, reduced_channels, 224, 224]
         x3_upsampled = self.upsample(x3_reduced)  # [B, reduced_channels, 224, 224]
         x4_upsampled = self.upsample(x4_reduced)  # [B, reduced_channels, 224, 224]
 
-        # 连接所有特征图
+       
         x_concat = torch.cat([x1_upsampled, x2_upsampled, x3_upsampled, x4_upsampled, pre_mask], dim=1)  # [B, 3840, 224, 224]
 
-        # 通过分类头进行分类
+        
         post_mask = self.classifier(x_concat)  # [B, num_classes, 224, 224]
             
         return pre_edge, pre_mask, post_mask
@@ -635,21 +612,6 @@ class CombinedLoss(nn.Module):
         fl = self.focal_loss(edge_prob, edges)
         dl = self.dice_loss(building_prob, buildings)
         return (1 - self.dice_weight) * fl + self.dice_weight * dl
-
-def edge_loss(pred_edges, true_edges, weight=1):
-    """
-    计算边缘损失函数，基于预测边缘和真实边缘的差异。
-    
-    Args:
-    - pred_edges (torch.Tensor): 预测的边缘张量。
-    - true_edges (torch.Tensor): 真实的边缘张量。
-    - weight (float): 损失权重。
-    
-    Returns:
-    - torch.Tensor: 计算出的边缘损失值。
-    """
-    return weight * torch.mean(torch.abs(pred_edges - true_edges))
-
 
 def sobel_edge_detection(image, device):
     sobel_kernel_x = torch.tensor([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=torch.float32).unsqueeze(0).unsqueeze(0)

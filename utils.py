@@ -397,18 +397,6 @@ def show_tensor_img(img, str_title=""):
     # plt.show()
 
 
-def save_tensor_img(tensor_img, img_path):
-    """
-    show tensor image
-    :param img: (tensor) [C, H, W]
-    :return:
-    """
-    npimg = tensor_img.detach().cpu().numpy()
-    npimg = np.transpose(npimg, (1, 2, 0))
-    npimg = (npimg * 255).astype(np.uint8)
-    pil_img = Image.fromarray(npimg)
-    pil_img.save(img_path)
-
 
 def set_logger(log_path):
     """Set the logger to log info in terminal and file `log_path`.

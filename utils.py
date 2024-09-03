@@ -76,6 +76,32 @@ def vis_single_channel(img, channel):
 
     return img_subspec
 
+def vis_single_channel_multiclasses(img, channel):
+    """
+    :param img: tensor images [B, C, H, W]
+    :param channel: int
+    :return: colorized image [B, 3, H, W]
+    """
+    device = img.device
+    batch_size, channels, height, width = img.shape
+
+    colors = {
+        0: torch.tensor([0, 0, 0, 1]).long().to(device),  # 黑色
+        1: torch.tensor([0, 1, 0, 1]).long().to(device),  # 绿色
+        2: torch.tensor([0, 0, 1, 1]).long().to(device),  # 蓝色
+        3: torch.tensor([1, 1, 0, 1]).long().to(device),  # 黄色
+        4: torch.tensor([1, 0, 0, 1]).long().to(device),  # 红色
+    }
+    img_color = torch.zeros((batch_size, height, width, 4)).long().to(device)
+
+
+    for class_idx, color in colors.items():
+        img_color = torch.where(img.float().permute(0, 2, 3, 1) == class_idx, color, img_color)
+
+    img_color = img_color.permute(0, 3, 1, 2).float()
+
+    return img_color
+
 def overall_accuracy_pytorch(y_pred, y_true):
     """
     Overall accuracy for multi-class prediction
@@ -396,7 +422,21 @@ def show_tensor_img(img, str_title=""):
     # plt.imshow(np.transpose(npimg, (1, 2, 0)), interpolation="nearest")
     # plt.show()
 
-
+def save_tensor_img(img, str_title="", save_path=None):
+    """
+    show tensor image
+    :param img: (tensor) [C, H, W]
+    :return:
+    """
+    plt.figure()
+    npimg = img.detach().cpu().numpy()
+    npimg = np.transpose(npimg, (1, 2, 0))
+    npimg = (npimg * 255).astype(np.uint8)
+    pil_img = Image.fromarray(npimg)
+    pil_img.save(save_path + "/" + str_title + ".png")
+    plt.close()
+    # plt.imshow(np.transpose(npimg, (1, 2, 0)), interpolation="nearest")
+    # plt.show()
 
 def set_logger(log_path):
     """Set the logger to log info in terminal and file `log_path`.

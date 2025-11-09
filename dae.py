@@ -177,7 +177,7 @@ class DualAutoencoderViT(nn.Module):
                                     pred_post.view(pred_post.shape[0], -1), dim=1)
 
         # Maximize the cosine similarity by minimizing its negative
-        cos_sim_loss = cos_sim.mean()
+        cos_sim_loss = 1 - cos_sim.mean()
 
         # Total loss is the weighted sum of mse_loss and negative cosine similarity loss
         loss = mse_loss + cos_sim_loss

@@ -4,7 +4,7 @@ The SSL pretraining stage code is modified from MAE(https://github.com/facebookr
 
 ## 1. Environment Setup
 '''
-  conda env create -f mae.yml
+conda env create -f mae.yml
 '''
 
 ## 2. SSL pretraining

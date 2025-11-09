@@ -1,9 +1,14 @@
-# Advancing Self-supervised Learning for Building Change Detection with Unifying Denoising Autoencoder and Contrastive Learning
+# Advancing Self-Supervised Learning for Building Change Detection and Damage Assessment: Unified Denoising Autoencoder and Contrastive Learning Framework
 
 The SSL pretraining stage code is modified from MAE(https://github.com/facebookresearch/mae).
 
-1. SSL pretraining: main_pretrain_dae.py
+## 1. Environment Setup
 
-2. Building Segmentation task solely: main_eval_dae_finetune_seg_edge.py
+## 2. SSL pretraining
+run main_pretrain_dae.py
 
-3. Building Segmentation & Damage Assessment multi-task: main_eval_dae_finetune_multitask_edge.py
+## 3. Building Segmentation task
+run main_eval_dae_finetune_seg_edge.py
+
+## 4. Building Segmentation & Damage Assessment multi-task
+run main_eval_dae_finetune_multitask_edge.py

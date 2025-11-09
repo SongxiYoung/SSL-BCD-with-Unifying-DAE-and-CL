@@ -12,7 +12,6 @@ import dataproc_double as dp
 from utils import AverageMeter, show_tensor_img, set_logger, vis_ms, save_checkpoint
 from torch.utils.tensorboard import SummaryWriter
 import os
-# from dae import CNNDAE as Model
 import dae
 import argparse
 

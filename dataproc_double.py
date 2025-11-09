@@ -1,5 +1,5 @@
 #########################
-## Spatiotemporal Contrastive Learning for RSE 2021
+## Spatiotemporal Contrastive Learning
 #########################
 
 import cv2
@@ -544,4 +544,5 @@ class Normalize_Std(object):
     def __repr__(self):
         return "Normalization to N(0,1),\n " \
                "mean-pre={}\n std-pre={}\n " \
+
                "mean-post={}\n std-post={}".format(self.mean_pre, self.std_pre, self.mean_post, self.std_post)

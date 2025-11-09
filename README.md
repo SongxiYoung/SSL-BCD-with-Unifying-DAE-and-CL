@@ -3,11 +3,9 @@
 The SSL pretraining stage code is modified from MAE(https://github.com/facebookresearch/mae).
 
 ## 1. Environment Setup
-  conda env create -f environment.yml
 ```
-This is a code block.
+conda env create -f mae.yml
 ```
-
 
 ## 2. SSL pretraining
 run main_pretrain_dae.py

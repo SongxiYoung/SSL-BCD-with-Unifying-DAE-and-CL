@@ -8,10 +8,16 @@ conda env create -f mae.yml
 ```
 
 ## 2. SSL pretraining
-run main_pretrain_dae.py
+```
+python main_pretrain_dae.py
+```
 
 ## 3. Building Segmentation task
-run main_eval_dae_finetune_seg_edge.py
+```
+python main_eval_dae_finetune_seg_edge.py
+```
 
 ## 4. Building Segmentation & Damage Assessment multi-task
-run main_eval_dae_finetune_multitask_edge.py
+```
+python main_eval_dae_finetune_multitask_edge.py
+```
